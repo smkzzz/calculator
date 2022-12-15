@@ -1,0 +1,114 @@
+/***
+   infix to postfix
+   no parenthesis
+**/
+import java.text.DecimalFormat;
+public class InfixToPostfix{
+   //data container
+   public String infix;
+   //constructor
+   
+   public InfixToPostfix(){}
+   public InfixToPostfix(String infix){
+      this.infix=infix;
+   }
+   //
+   public boolean isOperator(char ch){
+      return ch=='+' || ch =='-' || ch == '*' || ch =='/';
+   }
+   //
+   public boolean isSpace(char ch){
+      return ch == ' ';
+   }
+   //
+   /*
+      *,/ highest precedence
+      +,i lower precedence
+   */
+   public boolean lowerPrecedence(char a,char b){
+      switch(a){
+         case '+': case '-': return !(b=='+' || b=='-');    
+      
+      }
+      return false;
+   }
+   //conversion method
+   public String convert(String infix){
+      StringBuffer postfix = new StringBuffer();
+      MyStack stack = new MyStackLinked();
+         if(!infix.equals("")){
+            java.util.StringTokenizer st = new java.util.StringTokenizer(infix,"-+*/ ",true);
+            while(st.hasMoreTokens()){
+               String token=st.nextToken();
+               char ch = token.charAt(0);
+               //check if ch is an operator
+               if(isOperator(ch) && !isSpace(ch)){
+                     while(!stack.isEmpty() && !lowerPrecedence(stack.peek().toString().charAt(0),ch)){
+                        postfix.append(stack.pop()).append(" ");
+                     }
+                  stack.push(ch);
+               }
+               else{
+                  postfix.append(token).append(" ");
+               }
+            }
+            //for(;!stack.isEmpty();postfix.append(stack.pop()));
+            while(!stack.isEmpty()){
+               postfix.append(stack.pop()).append(" ");
+            }
+         }
+      return postfix.toString();
+   }
+   public String calculate(String postfix){
+     
+      double result= 0.0;
+      MyStackLinked stack = new MyStackLinked();
+         if(!postfix.equals("")){
+            java.util.StringTokenizer st = new java.util.StringTokenizer(postfix," ",true);
+            while(st.hasMoreTokens()){
+               String token=st.nextToken();
+               if(token.equals(" "))
+                  continue;
+               char ch = token.charAt(0);
+               if(isOperator(ch)){
+               double a=Double.parseDouble(stack.pop().toString());
+               double b=Double.parseDouble(stack.pop().toString());
+               double c = 0.0;
+               switch(ch){
+                  case '+':
+                      c = b+a;
+                      break;
+                  case '-':
+                      c = b-a;
+                      break;
+                  case '*':
+                     c = b*a;
+                     break;
+                  case '/':
+                     c = b/a;
+                     break;
+               }
+                     stack.push(c);
+               }
+               else{
+                  stack.push(token);
+               }
+      
+            }
+         
+      }
+      DecimalFormat format = new DecimalFormat("0.#################");
+      result =Double.parseDouble(stack.peek().toString());
+      return format.format(result);
+   }
+   
+   public static void main(String... args){
+      
+      InfixToPostfix itf = new InfixToPostfix("2+4*3–4/2+6");
+      
+      System.out.println(itf.convert("1-2*3+4/5"));
+      
+   }
+   //
+  }//end of class
+  
